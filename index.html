@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cubo 3x3 Interativo</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #1a1a1a;
+            overflow: hidden;
+            perspective: 1000px; /* Cria a profundidade do cenário */
+        }
+
+        /* Container principal que sofrerá a rotação */
+        .scene {
+            width: 300px;
+            height: 300px;
+            position: relative;
+            transform-style: preserve-3d;
+        }
+
+        /* O grupo que contém os 27 cubos */
+        .cube-grid {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d;
+            transform: rotateX(-20deg) rotateY(-20deg);
+        }
+
+        /* Estilo base de cada mini-cubo */
+        .mini-cube {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            transform-style: preserve-3d;
+        }
+
+        /* Faces dos mini-cubos */
+        .face {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        /* Posicionamento das faces para formar um cubo */
+        .front  { transform: translateZ(30px); }
+        .back   { transform: rotateY(180deg) translateZ(30px); }
+        .right  { transform: rotateY(90deg) translateZ(30px); }
+        .left   { transform: rotateY(-90deg) translateZ(30px); }
+        .top    { transform: rotateX(90deg) translateZ(30px); }
+        .bottom { transform: rotateX(-90deg) translateZ(30px); }
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="cube-grid" id="mainCube">
+            </div>
+    </div>
+
+    <script>
+        const grid = document.getElementById('mainCube');
+        const spacing = 70; // Tamanho do cubo (60px) + espaço desejado
+
+        // Gerar os 27 cubos (3x3x3)
+        // x, y, z variam de -1 a 1 para centralizar o grupo no meio da cena
+        for (let x = -1; x <= 1; x++) {
+            for (let y = -1; y <= 1; y++) {
+                for (let z = -1; z <= 1; z++) {
+                    const cube = document.createElement('div');
+                    cube.className = 'mini-cube';
+                    
+                    // Define a posição de cada cubinho no espaço 3D
+                    const posX = x * spacing;
+                    const posY = y * spacing;
+                    const posZ = z * spacing;
+                    
+                    cube.style.transform = `translate3d(${posX}px, ${posY}px, ${posZ}px)`;
+
+                    // Adiciona as 6 faces
+                    const faces = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+                    faces.forEach(f => {
+                        const faceDiv = document.createElement('div');
+                        faceDiv.className = `face ${f}`;
+                        cube.appendChild(faceDiv);
+                    });
+
+                    grid.appendChild(cube);
+                }
+            }
+        }
+
+        // Interação com o Mouse
+        document.addEventListener('mousemove', (e) => {
+            // Calcula a rotação com base na posição do mouse na tela
+            const xRotation = (window.innerHeight / 2 - e.pageY) / 10;
+            const yRotation = (e.pageX - window.innerWidth / 2) / 10;
+
+            grid.style.transform = `rotateX(${xRotation}deg) rotateY(${yRotation}deg)`;
+        });
+    </script>
+</body>
+</html>
